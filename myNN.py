@@ -2,7 +2,7 @@ import torch
 
 
 class Module(object):
-    def forward(self, *input_val):
+    def forward(self, *inputs):
         raise NotImplementedError
 
     def backward(self, *gradwrtoutput):
@@ -21,13 +21,13 @@ class Linear(Module):
         self.dbias: torch.Tensor = torch.empty(nb_hidden2)
         self.input: torch.Tensor = torch.empty(nb_hidden1)
 
-    def forward(self, input_val: torch.Tensor) -> torch.Tensor:
+    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         """
-        :param input_val:
+        :param inputs:
         :return:
         """
-        self.input = input_val
-        return self.weights @ input_val + self.bias
+        self.input = inputs
+        return self.weights @ inputs + self.bias
 
     def backward(self, gradwrtoutput: torch.Tensor) -> torch.Tensor:
         dx = self.weights.t() @ gradwrtoutput
@@ -45,11 +45,11 @@ class ReLU(Module):
         self.input: torch.Tensor = torch.empty(0)
         self.drelu: torch.Tensor = torch.empty(0)
 
-    def forward(self, input_val: torch.Tensor) -> torch.Tensor:
-        self.input = input_val
-        input_val = input_val.view((-1, 1))
-        zeros = torch.zeros_like(input_val)
-        conc = torch.cat((input_val, zeros), 1)
+    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+        self.input = inputs
+        inputs = inputs.view((-1, 1))
+        zeros = torch.zeros_like(inputs)
+        conc = torch.cat((inputs, zeros), 1)
         act = conc.max(1)
         self.drelu = (1 - act[1]).float()
         return act[0]
@@ -66,9 +66,9 @@ class Tanh(Module):
     def __init__(self):
         self.input: torch.Tensor = torch.empty(0)
 
-    def forward(self, input_val):
-        self.input = input_val
-        return torch.tanh(input_val)
+    def forward(self, inputs):
+        self.input = inputs
+        return torch.tanh(inputs)
 
     def backward(self, gradwrtoutput):
         dtanh = 1 - torch.pow(torch.tanh(self.input), 2)
