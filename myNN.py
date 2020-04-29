@@ -52,10 +52,6 @@ class ReLU(Module):
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         self.input = inputs
-        # inputs = inputs.view((-1, 1))
-        # zeros = torch.zeros_like(inputs)
-        # conc = torch.cat((inputs, zeros), 1)
-        # act = conc.max(1)
 
         relu = torch.relu(self.input)
         self.drelu = relu.clone()
