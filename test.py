@@ -44,9 +44,9 @@ def main():
         myNN.Linear(25, 2),
     )
 
-    epochs = 20
+    epochs = 250
     batch_size = 100
-    eta = 0.1
+    eta = 0.01
 
     losses = train(model, train_data, train_targets, epochs, batch_size, eta)
 

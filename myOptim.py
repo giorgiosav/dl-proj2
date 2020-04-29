@@ -9,5 +9,5 @@ class SGD:
         for param_group in self.params:
             for tup in param_group:
                 x, dx = tup
-                x -= dx
+                x -= self.lr * dx
                 

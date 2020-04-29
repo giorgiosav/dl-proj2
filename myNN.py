@@ -47,8 +47,14 @@ class Linear(Module):
         return [(self.weights, self.dweights), (self.bias, self.dbias)]
 
     def zero_grad(self):
-        self.dweights = torch.zeros(self.dweights.shape)
-        self.dbias = torch.zeros(self.dbias.shape)
+        '''
+        Zero-out the gradients. This is strange syntax, but you cannot 
+        reassign self.dweights and self.dbias to a new all-zero tensor. 
+        If you do, then the optimizer will lose the reference to dweights 
+        and dbias.
+        '''
+        self.dweights[True] = 0
+        self.dbias[True] = 0
 
 
 class ReLU(Module):
