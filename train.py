@@ -28,7 +28,7 @@ def train(model, train_data, train_targets, epochs, batch_size, eta):
             loss_acc += loss
 
             model.zero_grad()
-            model.backward(criterion.backward()) # TODO: add support criterion.backward()?
+            model.backward(criterion.backward()) # TODO: add support for just criterion.backward()?
             optimizer.step()
         
         print("Epoch: {}, loss: {}".format(e, loss_acc / batch_size))
