@@ -11,6 +11,9 @@ class Module(object):
     def param(self):
         return []
 
+    def zero_grad(self):
+        pass
+
     def __call__(self, *args):
         return self.forward(*args)
 
@@ -42,6 +45,10 @@ class Linear(Module):
 
     def param(self) -> list:
         return [(self.weights, self.dweights), (self.bias, self.dbias)]
+
+    def zero_grad(self):
+        self.dweights = torch.zeros(self.dweights.shape)
+        self.dbias = torch.zeros(self.dbias.shape)
 
 
 class ReLU(Module):
@@ -100,9 +107,15 @@ class Sequential(Module):
         x = gradwrtoutput
         for l in self.backlayers:
             x = l.backward(x)
+        
+        return x
+
+    def zero_grad(self):
+        for l in self.layers:
+            l.zero_grad()
 
     def param(self):
-        return []
+        return [l.param() for l in self.layers]
 
 class LossMSE(Module):
 
