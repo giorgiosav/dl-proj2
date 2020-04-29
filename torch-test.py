@@ -44,16 +44,28 @@ def test_paramless_module(myModule, torchModule, batch_size):
 
 
 
+def test_mse(tensor_shape):
+
+    myMSE = myNN.LossMSE()
+    torchMSE = torch.nn.MSELoss()
+
+    tensor_size = 100
+    in_tensor = torch.rand(tensor_shape)
+    target = torch.rand(tensor_shape)
+
+    myl = myMSE(in_tensor, target)
+    torchl = torchMSE(in_tensor, target)
+
+    assert_tensors_equal(myl, torchl)
+
 def main():
 
     
     myReLU = myNN.ReLU()
     myTanh = myNN.Tanh()
-    # myMSE = myNN.LossMSE()
 
     torchReLU = torch.nn.ReLU()
     torchTanh = torch.nn.Tanh()
-    # torchMSE = torch.nn.MSELoss()
 
     test_linear(10, 50, 1)
     test_linear(10, 50, 10)
@@ -63,6 +75,10 @@ def main():
 
     test_paramless_module(myTanh, torchTanh, 1)
     test_paramless_module(myTanh, torchTanh, 10)
+
+    test_mse(100)
+    test_mse((10, 100))
+    test_mse((10, 100, 23, 42, 61))
 
     print ("all tests passed!")
 

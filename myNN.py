@@ -1,5 +1,5 @@
 import torch
-
+from functools import reduce
 
 class Module(object):
     def forward(self, *inputs):
@@ -113,14 +113,25 @@ class LossMSE(Module):
     def __init__(self):
         self.prediction: torch.Tensor = torch.empty(0)
         self.target: torch.Tensor = torch.empty(0)
+        self.n_elements = 0
         
-    def forward(self, *inputs):
-        self.prediction = inputs[0]
-        self.target = inputs[1]
-        return torch.sum(torch.pow(self.prediction-self.target, 2))
+    def forward(self, prediction, target):
+        self.prediction = prediction
+        self.target = target
+        
+        if self.prediction.shape != self.target.shape:
+            raise RuntimeError(
+                "Shape mismatch, prediction: {}, target: {}".format(
+                        self.prediction.shape, self.target.shape
+                    )
+                )
+        
+        self.n_elements = reduce(lambda a,b: a*b, self.prediction.shape)
+
+        return torch.sum(torch.pow(self.prediction-self.target, 2)) / self.n_elements
 
     def backward(self):
-        dloss = 2 * (self.prediction - self.target)
+        dloss = 2 * (self.prediction - self.target) / self.n_elements
         return dloss
 
     def param(self):
