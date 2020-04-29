@@ -76,3 +76,44 @@ class Tanh(Module):
 
     def param(self):
         return []
+
+
+class Sequential(Module):
+
+    def __init__(self, *layers):
+        self.layers: list[Module] = list(layers)
+        self.backlayers: list[Module] = list(layers)
+        self.backlayers.reverse()
+
+    def forward(self, inputs):
+        x = inputs
+        for l in self.layers:
+            x = l.forward(x)
+        return x
+
+    def backward(self, gradwrtoutput):
+        x = gradwrtoutput
+        for l in self.backlayers:
+            x = l.backward(x)
+
+    def param(self):
+        return []
+
+class LossMSE(Module):
+
+    def __init__(self):
+        self.prediction: torch.Tensor = torch.empty(0)
+        self.target: torch.Tensor = torch.empty(0)
+
+    def forward(self, *inputs):
+        self.prediction = inputs[0]
+        self.target = inputs[1]
+        return torch.sum(torch.pow(self.prediction-self.target, 2))
+
+    def backward(self):
+        dloss = 2 * (self.prediction - self.target)
+        return dloss
+
+    def param(self):
+        return []
+
