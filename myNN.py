@@ -120,7 +120,7 @@ class LossMSE(Module):
         self.target = target
         
         if self.prediction.shape != self.target.shape:
-            raise RuntimeError(
+            raise ValueError(
                 "Shape mismatch, prediction: {}, target: {}".format(
                         self.prediction.shape, self.target.shape
                     )
