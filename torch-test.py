@@ -1,0 +1,72 @@
+import torch
+import myNN
+from torch.nn.parameter import Parameter
+
+
+def assert_tensors_equal(t1, t2):
+    assert torch.sum(t1 - t2) == 0
+
+
+
+def test_linear(nb_hidden1, nb_hidden2, batch_size):
+
+    myLinear = myNN.Linear(nb_hidden1, nb_hidden2)
+    torchLinear = torch.nn.Linear(nb_hidden1, nb_hidden2)
+
+
+    in_tensor = torch.rand((batch_size, nb_hidden1))
+    weights = torch.rand((nb_hidden2, nb_hidden1))
+    biases = torch.rand(nb_hidden2)
+
+
+    myLinear.weights = weights
+    myLinear.bias = biases
+
+    torchLinear.weight = Parameter(weights)
+    torchLinear.bias = Parameter(biases)
+
+    myl = myLinear(in_tensor)
+    torchl = torchLinear(in_tensor)
+
+    assert_tensors_equal(myl, torchl)
+
+
+
+def test_paramless_module(myModule, torchModule, batch_size):
+
+    tensor_size = 100
+    in_tensor = torch.rand((batch_size, tensor_size)) * 50 - 25 #range -25, 25
+
+    myt = myModule(in_tensor)
+    torcht = torchModule(in_tensor)
+
+    assert_tensors_equal(myt, torcht)
+
+
+
+def main():
+
+    
+    myReLU = myNN.ReLU()
+    myTanh = myNN.Tanh()
+    # myMSE = myNN.LossMSE()
+
+    torchReLU = torch.nn.ReLU()
+    torchTanh = torch.nn.Tanh()
+    # torchMSE = torch.nn.MSELoss()
+
+    test_linear(10, 50, 1)
+    test_linear(10, 50, 10)
+
+    test_paramless_module(myReLU, torchReLU, 1)
+    test_paramless_module(myReLU, torchReLU, 10)
+
+    test_paramless_module(myTanh, torchTanh, 1)
+    test_paramless_module(myTanh, torchTanh, 10)
+
+    print ("all tests passed!")
+
+
+if __name__ == '__main__':
+    main()
+

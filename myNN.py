@@ -11,6 +11,9 @@ class Module(object):
     def param(self):
         return []
 
+    def __call__(self, *args):
+        return self.forward(*args)
+
 
 class Linear(Module):
 
@@ -27,7 +30,9 @@ class Linear(Module):
         :return:
         """
         self.input = inputs
-        return self.weights @ inputs + self.bias
+
+        # optimized version of bias + input @ weights.t()
+        return torch.addmm(self.bias, self.input, self.weights.t())
 
     def backward(self, gradwrtoutput: torch.Tensor) -> torch.Tensor:
         dx = self.weights.t() @ gradwrtoutput
@@ -47,12 +52,16 @@ class ReLU(Module):
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         self.input = inputs
-        inputs = inputs.view((-1, 1))
-        zeros = torch.zeros_like(inputs)
-        conc = torch.cat((inputs, zeros), 1)
-        act = conc.max(1)
-        self.drelu = (1 - act[1]).float()
-        return act[0]
+        # inputs = inputs.view((-1, 1))
+        # zeros = torch.zeros_like(inputs)
+        # conc = torch.cat((inputs, zeros), 1)
+        # act = conc.max(1)
+
+        relu = torch.relu(self.input)
+        self.drelu = relu.clone()
+        self.drelu[self.drelu != 0] = 1
+
+        return relu
 
     def backward(self, gradwrtoutput: torch.Tensor) -> torch.Tensor:
         return self.drelu * gradwrtoutput
@@ -104,7 +113,7 @@ class LossMSE(Module):
     def __init__(self):
         self.prediction: torch.Tensor = torch.empty(0)
         self.target: torch.Tensor = torch.empty(0)
-
+        
     def forward(self, *inputs):
         self.prediction = inputs[0]
         self.target = inputs[1]
