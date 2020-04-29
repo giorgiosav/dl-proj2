@@ -38,15 +38,15 @@ def main():
 
     model = myNN.Sequential(
         myNN.Linear(2, 25),
-        myNN.ReLU(),
+        myNN.Tanh(),
         myNN.Linear(25, 25),
-        myNN.ReLU(),
+        myNN.Tanh(),
         myNN.Linear(25, 2),
     )
 
     epochs = 250
     batch_size = 100
-    eta = 0.01
+    eta = 0.001
 
     losses = train(model, train_data, train_targets, epochs, batch_size, eta)
 
