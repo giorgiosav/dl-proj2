@@ -10,11 +10,14 @@ def _generate_set(n_points):
     points = torch.rand(n_points, 2)
     sums = points.sub(center).pow(2).sum(1) # (x-0.5)^2 + (y-0.5)^2
 
-    data = torch.where(sums <= radius2, torch.ones(n_points), torch.zeros(n_points))
+    labels = torch.where(sums <= radius2, torch.ones(n_points), torch.zeros(n_points))
 
-    return data
+    return points, labels
     
 
 def get_train_test_data(n_points):
 
-    return _generate_set(n_points), _generate_set(n_points)
+    train_data, train_targets = _generate_set(n_points)
+    test_data, test_targets = _generate_set(n_points)
+
+    return train_data, train_targets, test_data, test_targets
