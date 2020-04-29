@@ -2,10 +2,16 @@ import torch
 import myNN
 import myOptim
 
+def one_hot(tensor):
+    return torch.zeros(tensor.shape[0], 2).scatter_(1, tensor.view(-1, 1), 1.0)
+
+
 def train(model, train_data, train_targets, epochs, batch_size, eta):
     print("Starting training")
     eta = 0.01
     
+    train_targets = one_hot(train_targets)
+
     criterion = myNN.LossMSE()
     optimizer = myOptim.SGD(model.param(), eta)
 
@@ -16,8 +22,7 @@ def train(model, train_data, train_targets, epochs, batch_size, eta):
 
         for data, target in zip(train_data.split(batch_size), train_targets.split(batch_size)):
 
-            out = model(data)
-            prediction = out.max(1)[1]
+            prediction = model(data)
             loss = criterion(prediction, target)
 
             loss_acc += loss
@@ -35,10 +40,11 @@ def train(model, train_data, train_targets, epochs, batch_size, eta):
 def compute_errors(model, data, targets, batch_size):
     tot_err = 0
 
-    for inp, targ in zip(data.split(batch_size), target.split(batch_size)):
+    for inp, targ in zip(data.split(batch_size), targets.split(batch_size)):
         
         prediction = model(inp)
-        tot_err += 1 - torch.sum(prediction == targ)
+        classes = prediction.max(1)[1]
+        tot_err += classes.shape[0] - torch.sum(classes == targ).item()
     
     return tot_err
 

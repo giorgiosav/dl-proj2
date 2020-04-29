@@ -6,7 +6,7 @@ class SGD:
         self.lr = lr
 
     def step(self):
-        for param_group in params:
+        for param_group in self.params:
             for tup in param_group:
                 x, dx = tup
                 x -= dx

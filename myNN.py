@@ -38,9 +38,9 @@ class Linear(Module):
         return torch.addmm(self.bias, self.input, self.weights.t())
 
     def backward(self, gradwrtoutput: torch.Tensor) -> torch.Tensor:
-        dx = self.weights.t() @ gradwrtoutput
-        self.dbias.add_(gradwrtoutput)
-        self.dweights.add_(gradwrtoutput.view((-1, 1)).mm(self.input.view(1, -1)))
+        dx = gradwrtoutput @ self.weights
+        self.dbias.add_(gradwrtoutput.sum(0))
+        self.dweights.add_(gradwrtoutput.t().mm(self.input))
         return dx
 
     def param(self) -> list:

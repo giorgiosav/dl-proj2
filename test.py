@@ -46,16 +46,15 @@ def main():
 
     epochs = 20
     batch_size = 100
-    eta = 0.01
+    eta = 0.1
 
     losses = train(model, train_data, train_targets, epochs, batch_size, eta)
-    print(losses)
 
     print("Train error:")
-    compute_errors(model, train_data, train_targets, batch_size)
+    print(compute_errors(model, train_data, train_targets, batch_size))
 
     print("Test error:")
-    compute_errors(model, test_data, test_targets, batch_size)
+    print(compute_errors(model, test_data, test_targets, batch_size))
 
 if __name__ == '__main__':
     main()
