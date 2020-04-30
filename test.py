@@ -2,6 +2,8 @@ import torch
 import myNN
 from train import train, compute_errors
 from data import get_train_test_data
+from plot import *
+
 
 def main():
     torch.set_grad_enabled(False)
@@ -34,7 +36,10 @@ def main():
 
     # return
 
-    train_data, train_targets, test_data, test_targets = get_train_test_data(1000)
+    # train_data, train_targets, test_data, test_targets = get_train_test_data(1000)
+    # visualize_predictions(train_data, train_targets, 250, "test_image")
+    # return
+
 
     model = myNN.Sequential(
         myNN.Linear(2, 25),
@@ -55,6 +60,7 @@ def main():
 
     print("Test error:")
     print(compute_errors(model, test_data, test_targets, batch_size))
+
 
 if __name__ == '__main__':
     main()

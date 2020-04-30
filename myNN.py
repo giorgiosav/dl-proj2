@@ -1,6 +1,7 @@
 import torch
 from functools import reduce
 
+
 class Module(object):
     def forward(self, *inputs):
         raise NotImplementedError
@@ -47,12 +48,12 @@ class Linear(Module):
         return [(self.weights, self.dweights), (self.bias, self.dbias)]
 
     def zero_grad(self):
-        '''
-        Zero-out the gradients. This is strange syntax, but you cannot 
-        reassign self.dweights and self.dbias to a new all-zero tensor. 
-        If you do, then the optimizer will lose the reference to dweights 
+        """
+        Zero-out the gradients. This is strange syntax, but you cannot
+        reassign self.dweights and self.dbias to a new all-zero tensor.
+        If you do, then the optimizer will lose the reference to dweights
         and dbias.
-        '''
+        """
         self.dweights[True] = 0
         self.dbias[True] = 0
 
@@ -113,7 +114,7 @@ class Sequential(Module):
         x = gradwrtoutput
         for l in self.backlayers:
             x = l.backward(x)
-        
+
         return x
 
     def zero_grad(self):
@@ -123,27 +124,28 @@ class Sequential(Module):
     def param(self):
         return [l.param() for l in self.layers]
 
+
 class LossMSE(Module):
 
     def __init__(self):
         self.prediction: torch.Tensor = torch.empty(0)
         self.target: torch.Tensor = torch.empty(0)
         self.n_elements = 0
-        
+
     def forward(self, prediction, target):
         self.prediction = prediction
         self.target = target
-        
+
         if self.prediction.shape != self.target.shape:
             raise ValueError(
                 "Shape mismatch, prediction: {}, target: {}".format(
-                        self.prediction.shape, self.target.shape
-                    )
+                    self.prediction.shape, self.target.shape
                 )
-        
-        self.n_elements = reduce(lambda a,b: a*b, self.prediction.shape)
+            )
 
-        return torch.sum(torch.pow(self.prediction-self.target, 2)) / self.n_elements
+        self.n_elements = reduce(lambda a, b: a * b, self.prediction.shape)
+
+        return torch.sum(torch.pow(self.prediction - self.target, 2)) / self.n_elements
 
     def backward(self):
         dloss = 2 * (self.prediction - self.target) / self.n_elements
@@ -151,4 +153,3 @@ class LossMSE(Module):
 
     def param(self):
         return []
-
