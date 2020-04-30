@@ -39,7 +39,7 @@ class Linear(Module):
 
     def backward(self, gradwrtoutput: torch.Tensor) -> torch.Tensor:
         dx = gradwrtoutput @ self.weights
-        self.dbias.add_(gradwrtoutput.sum(0))
+        self.dbias.add_(gradwrtoutput.sum(0)) # sum over batches
         self.dweights.add_(gradwrtoutput.t().mm(self.input))
         return dx
 
@@ -50,7 +50,7 @@ class Linear(Module):
         '''
         Zero-out the gradients. This is strange syntax, but you cannot 
         reassign self.dweights and self.dbias to a new all-zero tensor. 
-        If you do, then the optimizer will lose the reference to dweights 
+        If you do, then the optimizer will lose the references to dweights 
         and dbias.
         '''
         self.dweights[True] = 0

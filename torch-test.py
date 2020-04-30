@@ -4,7 +4,8 @@ from torch.nn.parameter import Parameter
 
 
 def assert_tensors_equal(t1, t2):
-    assert torch.sum(t1 - t2) == 0
+    assert torch.all(torch.eq(t1, t2))
+    
 
 
 

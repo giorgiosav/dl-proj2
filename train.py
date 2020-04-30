@@ -43,7 +43,9 @@ def compute_errors(model, data, targets, batch_size):
     for inp, targ in zip(data.split(batch_size), targets.split(batch_size)):
         
         prediction = model(inp)
-        classes = prediction.max(1)[1]
+        classes = prediction.max(1)[1] # one-hot to 1-0
+
+        # n_tot - n_correct
         tot_err += classes.shape[0] - torch.sum(classes == targ).item()
     
     return tot_err
