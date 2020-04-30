@@ -36,7 +36,7 @@ def main():
 
     # return
 
-    # train_data, train_targets, test_data, test_targets = get_train_test_data(1000)
+    train_data, train_targets, test_data, test_targets = get_train_test_data(1000)
     # visualize_predictions(train_data, train_targets, 250, "test_image")
     # return
 
