@@ -8,7 +8,7 @@ from data import get_train_test_data
 
 
 def select_best_hyper(activation: str, etas: list, momentums: list, n_runs: int = 5,
-                      epochs: int = 50, batch_size: int = 100, verbose: bool = True) -> dict:
+                      epochs: int = 100, batch_size: int = 100, verbose: bool = True) -> dict:
     best_err = sys.float_info.max
     best_params = {"eta": 0, "momentum": 0}
 

@@ -197,12 +197,14 @@ def main(activation: str, validation: bool, pytorch: bool, plots: bool, n_runs: 
 
     print("-------------------------------------------------------")
 
-    best_etas = {"relu": 0.05, "tanh": 0.05}
-    best_momentum = {"relu": 0.7, "tanh": 0.5}
+    best_etas = {"relu": 0.1, "tanh": 0.1}
+    best_momentum = {"relu": 0.6, "tanh": 0.8}
     if validation:
-        print("Starting validation algorithm on eta parameter for the chosen model")
-        etas = [1e-4, 1e-3, 1e-2, 1e-1, 1]
-        momentums = [1e-4, 1e-3, 1e-2, 1e-1, 1]
+        print("Starting validation algorithm on eta parameter for the chosen model. "
+              "This may require a few hours")
+        # Fine grained search, coarse grained already done before
+        etas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        momentums = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
         best_param = select_best_hyper(activation, etas, momentums)
         eta = best_param["eta"]
         momentum = best_param["momentum"]
