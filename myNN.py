@@ -1,5 +1,6 @@
 import torch
 from functools import reduce
+import math
 
 
 class Module(object):
@@ -22,8 +23,21 @@ class Module(object):
 class Linear(Module):
 
     def __init__(self, nb_hidden1: int, nb_hidden2: int):
-        self.weights: torch.Tensor = torch.empty(nb_hidden2, nb_hidden1).normal_()
-        self.bias: torch.Tensor = torch.empty(nb_hidden2).normal_()
+
+        # Init 1: Pytorch Init
+        std = 1. / math.sqrt(nb_hidden1)
+        self.weights: torch.Tensor = torch.empty(nb_hidden2, nb_hidden1)\
+                                          .uniform_(-std, std)
+        self.bias: torch.Tensor = torch.empty(nb_hidden2).uniform_(-std, std)
+
+        # Init 2: Xavier Initialization
+        # std = math.sqrt(2 / (nb_hidden1 + nb_hidden2))
+        # self.weights = torch.empty(nb_hidden2, nb_hidden1).normal_(0, std)
+        # self.bias = torch.empty(1, nb_hidden2).normal_(0, std)
+
+        # Random init:
+        # self.weights: torch.Tensor = torch.empty(nb_hidden2, nb_hidden1).normal_()
+        # self.bias: torch.Tensor = torch.empty(nb_hidden2).normal_()
         self.dweights: torch.Tensor = torch.empty(nb_hidden2, nb_hidden1)
         self.dbias: torch.Tensor = torch.empty(nb_hidden2)
         self.input: torch.Tensor = torch.empty(nb_hidden1)
@@ -40,8 +54,8 @@ class Linear(Module):
 
     def backward(self, gradwrtoutput: torch.Tensor) -> torch.Tensor:
         dx = gradwrtoutput @ self.weights
-        self.dbias.add_(gradwrtoutput.sum(0))
-        self.dweights.add_(gradwrtoutput.t().mm(self.input))
+        self.dbias.add_(gradwrtoutput.sum(0)).div(self.input.shape[0]) #TODO: SHOULD WE KEEP IT?
+        self.dweights.add_(gradwrtoutput.t().mm(self.input)).div(self.input.shape[0])
         return dx
 
     def param(self) -> list:
@@ -145,7 +159,7 @@ class LossMSE(Module):
 
         self.n_elements = reduce(lambda a, b: a * b, self.prediction.shape)
 
-        return torch.sum(torch.pow(self.prediction - self.target, 2)) / self.n_elements
+        return torch.mean((self.prediction - self.target)**2)
 
     def backward(self):
         dloss = 2 * (self.prediction - self.target) / self.n_elements
