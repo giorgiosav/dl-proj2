@@ -20,7 +20,17 @@ matplotlib.rcParams.update(
 )
 
 
-def visualize_predictions(data, target, epoch, test_label, savename):
+def visualize_predictions(data: torch.Tensor, target: torch.Tensor, epoch: int, test_label: str, savename: str):
+    """
+    Plot prediction on a xy axis
+    :param data: datapoints
+    :param target: targets of datapoints
+    :param epoch: epoch in training
+    :param test_label: add a label indicating if the plot is for train or test
+    :param savename: name used for saving
+    """
+
+    # plot a circle defining the area in which the points are labeled as "1"
     colors = ["orangered", "blue"]
     fig = plt.figure(figsize=(10, 10))
     circle = plt.Circle(
@@ -28,6 +38,8 @@ def visualize_predictions(data, target, epoch, test_label, savename):
     )
     ax = fig.gca()
     ax.add_artist(circle)
+
+    # Plot points
     ax.scatter(
         data[:, 0],
         data[:, 1],
@@ -35,6 +47,8 @@ def visualize_predictions(data, target, epoch, test_label, savename):
         cmap=matplotlib.colors.ListedColormap(colors),
         s=20,
     )
+
+    # Set axis and label
     plt.xlabel(r"\textbf{x}", fontsize=11)
     plt.ylabel(r"\textbf{y}", fontsize=11)
     plt.title(
@@ -55,39 +69,40 @@ def plot_over_epochs(values_list: list, epochs: int, label: str, savename: str):
     """
 
     # Compute the average of the value to plot,
-    # together with maximum down/up displacement from the average at each epoch
     mean_train = torch.mean(torch.Tensor([val["train"] for val in values_list]), 0)
     mean_test = torch.mean(torch.Tensor([val["test"] for val in values_list]), 0)
-    err_up_train = (
-        torch.max(torch.Tensor([val["train"] for val in values_list]), 0)[0]
-        - mean_train
-    )
-    err_down_train = (
-        mean_train
-        - torch.min(torch.Tensor([val["train"] for val in values_list]), 0)[0]
-    )
-    err_up_test = (
-        torch.max(torch.Tensor([val["test"] for val in values_list]), 0)[0] - mean_test
-    )
-    err_down_test = (
-        mean_test - torch.min(torch.Tensor([val["test"] for val in values_list]), 0)[0]
-    )
+    # err_up_train = (
+    #     torch.max(torch.Tensor([val["train"] for val in values_list]), 0)[0]
+    #     - mean_train
+    # )
+    # err_down_train = (
+    #     mean_train
+    #     - torch.min(torch.Tensor([val["train"] for val in values_list]), 0)[0]
+    # )
+    # err_up_test = (
+    #     torch.max(torch.Tensor([val["test"] for val in values_list]), 0)[0] - mean_test
+    # )
+    # err_down_test = (
+    #     mean_test - torch.min(torch.Tensor([val["test"] for val in values_list]), 0)[0]
+    # )
     epochs_range = range(0, epochs)
 
     plt.figure()
 
     # Plot data and save figure
-    err_train = [err_down_train, err_up_train]
-    err_test = [err_down_test, err_up_test]
-    markers, caps, bars = plt.errorbar(
-        epochs_range, mean_train, yerr=err_train, label="Train " + label, color="blue"
-    )
-    [bar.set_alpha(0.5) for bar in bars]
-    markers, caps, bars = plt.errorbar(
-        epochs_range, mean_test, yerr=err_test, label="Test " + label, color="orange"
-    )
-    [bar.set_alpha(0.5) for bar in bars]
-    plt.xticks(range(0, epochs, 2))
+    # err_train = [err_down_train, err_up_train]
+    # err_test = [err_down_test, err_up_test]
+    plt.plot(epochs_range, mean_train, label="Train " + label, color="blue")
+    # markers, caps, bars = plt.errorbar(
+    #     epochs_range, mean_train, yerr=err_train, label="Train " + label, color="blue"
+    # )
+    # [bar.set_alpha(0.5) for bar in bars]
+    plt.plot(epochs_range, mean_test, label="Test " + label, color="orange")
+    # markers, caps, bars = plt.errorbar(
+    #     epochs_range, mean_test, yerr=err_test, label="Test " + label, color="orange"
+    # )
+    # [bar.set_alpha(0.5) for bar in bars]
+    plt.xticks(range(0, epochs, 10))
 
     # set labels (LaTeX can be used) -> Note: with the setting deactivated, this will print \textbf{...}
     plt.xlabel(r"\textbf{Epochs}", fontsize=11)

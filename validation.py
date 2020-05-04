@@ -8,14 +8,25 @@ from data import get_train_test_data
 
 
 def select_best_hyper(
-    activation: str,
-    etas: list,
-    momentums: list,
-    n_runs: int = 5,
-    epochs: int = 100,
-    batch_size: int = 100,
-    verbose: bool = True,
+        activation: str,
+        etas: list,
+        momentums: list,
+        n_runs: int = 10,
+        epochs: int = 100,
+        batch_size: int = 100,
+        verbose: bool = True,
 ) -> dict:
+    """
+    Get best hyper parameter for myNN implementation by grid-searching
+    :param activation: activation function to create the model
+    :param etas: list of learning rate to test
+    :param momentums: list of momentums to test
+    :param n_runs: number of runs to estimate performances
+    :param epochs: number of epochs after which to stop
+    :param batch_size: dimension of each batch
+    :param verbose: print logging
+    :return: dictionary with best parameters
+    """
     best_err = sys.float_info.max
     best_params = {"eta": 0, "momentum": 0}
 
@@ -32,8 +43,6 @@ def select_best_hyper(
                         myNN.ReLU(),
                         myNN.Linear(25, 25),
                         myNN.ReLU(),
-                        myNN.Linear(25, 25),
-                        myNN.ReLU(),
                         myNN.Linear(25, 2),
                     )
                 else:
@@ -44,11 +53,9 @@ def select_best_hyper(
                         myNN.Tanh(),
                         myNN.Linear(25, 25),
                         myNN.Tanh(),
-                        myNN.Linear(25, 25),
-                        myNN.Tanh(),
                         myNN.Linear(25, 2),
                     )
-                criterion = myNN.LossMSE()
+
                 # A new train/test set is used at each run to avoid overfitting a dataset
                 (
                     train_data,

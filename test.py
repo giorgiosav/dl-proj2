@@ -1,5 +1,6 @@
-from torch import nn
-import myNN
+# -*- coding: utf-8 -*-
+"""Script to test the implementation"""
+
 from train import *
 from data import get_train_test_data
 from plot import *
@@ -12,6 +13,16 @@ import random
 def test_selected_model(
     activation: str, eta: float, momentum: float, plots: bool, n_runs: int
 ):
+    """
+    Test our implementation with the selected activation function and learning parameters, eventually plotting
+    the learning curves and final result.
+    :param activation: activation function to be used in the network
+    :param eta: SGD learning rate
+    :param momentum: SGD momentum factor
+    :param plots: whether produce plots as in the report
+    :param n_runs: number of runs for performance estimation
+    """
+
     # Selecting a random model to plot the xy-axis
     plot_model = random.randint(0, n_runs)
 
@@ -22,8 +33,10 @@ def test_selected_model(
     epochs = 250
     batch_size = 100
 
+    # Do the training
     print("Starting training on our implementation over {} runs".format(n_runs))
     for i in range(n_runs):
+        # Get random data and create selected network
         train_data, train_targets, test_data, test_targets = get_train_test_data(1000)
         print("Building model {}...".format(i))
         if activation == "relu":
@@ -47,6 +60,7 @@ def test_selected_model(
                 myNN.Linear(25, 2),
             )
 
+        # Train the network, Produce xy plots if required
         if plots and i == plot_model:
             print(
                 "You chose to produce prediction visualization on a xy grid every 50 epochs.\n"
@@ -80,6 +94,7 @@ def test_selected_model(
                 False,
             )
 
+        # Add loss to list of loss
         tot_loss.append(losses)
         tot_err.append(errors)
 
@@ -89,6 +104,7 @@ def test_selected_model(
             )
         )
 
+        # Compute error for train and test
         train_err = compute_errors(model, train_data, train_targets, batch_size)
         test_err = compute_errors(model, test_data, test_targets, batch_size)
         tot_err_train.append(train_err)
@@ -139,6 +155,15 @@ def test_selected_model(
 def test_pytorch_model(
     activation: str, eta: float, momentum: float, plots: bool, n_runs: int
 ):
+    """
+    Test pytorch implementation with the selected activation function and learning parameters, eventually plotting
+    the learning curves.
+    :param activation: activation function to be used in the network
+    :param eta: SGD learning rate
+    :param momentum: SGD momentum factor
+    :param plots: whether produce plots as in the report
+    :param n_runs: number of runs for performance estimation
+    """
 
     tot_loss = []
     tot_err = []
@@ -147,6 +172,7 @@ def test_pytorch_model(
     epochs = 250
     batch_size = 100
 
+    # Test pytorch over n_runs
     print("Starting training on pytorch implementation over {} runs".format(n_runs))
     for i in range(n_runs):
         train_data, train_targets, test_data, test_targets = get_train_test_data(1000)
@@ -172,6 +198,7 @@ def test_pytorch_model(
                 nn.Linear(25, 2),
             )
 
+        # Train pytorch and record run losses and errors
         losses, errors = train_pytorch(
             model,
             train_data,
@@ -243,6 +270,14 @@ def test_pytorch_model(
 
 
 def main(activation: str, validation: bool, pytorch: bool, plots: bool, n_runs: int):
+    """
+    Run the selected implementation
+    :param activation: ReLU or Tanh as activation
+    :param validation: perform validation to find best hyper params
+    :param pytorch: compare our performance with pytorch
+    :param plots: produce plots as in the report
+    :param n_runs: number of runs to estimate performances
+    """
     torch.set_grad_enabled(False)
 
     # If no arguments are received, print help info
@@ -255,6 +290,7 @@ def main(activation: str, validation: bool, pytorch: bool, plots: bool, n_runs: 
         )
         print("-------------------------------------------------------")
 
+    # Define activation function
     if activation == "relu":
         print("ReLU activation function chosen.")
     else:
@@ -262,6 +298,7 @@ def main(activation: str, validation: bool, pytorch: bool, plots: bool, n_runs: 
 
     print("-------------------------------------------------------")
 
+    # Load best params, by computing them or already defined
     best_etas = {"relu": 0.1, "tanh": 0.1}
     best_momentum = {"relu": 0.6, "tanh": 0.8}
     if validation:
@@ -270,8 +307,8 @@ def main(activation: str, validation: bool, pytorch: bool, plots: bool, n_runs: 
             "This may require a few hours"
         )
         # Fine grained search, coarse grained already done before
-        etas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
-        momentums = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        etas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+        momentums = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
         best_param = select_best_hyper(activation, etas, momentums)
         eta = best_param["eta"]
         momentum = best_param["momentum"]
@@ -282,10 +319,12 @@ def main(activation: str, validation: bool, pytorch: bool, plots: bool, n_runs: 
 
     print("-------------------------------------------------------")
 
+    # Test our implementation
     test_selected_model(activation, eta, momentum, plots, n_runs)
 
     print("-------------------------------------------------------")
 
+    # If selected, compare with pytorch
     if pytorch:
         torch.set_grad_enabled(True)
         print(
