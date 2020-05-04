@@ -4,6 +4,9 @@ import math
 
 
 class Module(object):
+    '''
+    Superclass for all implemented modules.
+    '''
     def forward(self, *inputs):
         raise NotImplementedError
 
@@ -11,41 +14,53 @@ class Module(object):
         raise NotImplementedError
 
     def param(self):
+        '''
+        Modules with no params return an empty list, the others
+        overwrite this function.
+        '''
         return []
 
     def zero_grad(self):
+        '''
+        Modules that don't define this function do nothing.
+        '''
         pass
 
     def __call__(self, *args):
+        '''
+        Enables pytorch-like syntax of calling a module directly.
+        '''
         return self.forward(*args)
 
 
 class Linear(Module):
-
+    '''
+    Implements linear fully-connected layer
+    '''
     def __init__(self, nb_hidden1: int, nb_hidden2: int):
+        '''
+        :param nb_hidden1: (int) number of input hidden units
+        :param nb_hidden2: (int) number of output hidden units
 
+        Performs initialization of weights and biases like in pytoch, 
+        according to a uniform distribution. This helps with convergence
+        during training.
+        '''
         # Init 1: Pytorch Init
         std = 1. / math.sqrt(nb_hidden1)
         self.weights: torch.Tensor = torch.empty(nb_hidden2, nb_hidden1)\
                                           .uniform_(-std, std)
         self.bias: torch.Tensor = torch.empty(nb_hidden2).uniform_(-std, std)
-
-        # Init 2: Xavier Initialization
-        # std = math.sqrt(2 / (nb_hidden1 + nb_hidden2))
-        # self.weights = torch.empty(nb_hidden2, nb_hidden1).normal_(0, std)
-        # self.bias = torch.empty(1, nb_hidden2).normal_(0, std)
-
-        # Random init:
-        # self.weights: torch.Tensor = torch.empty(nb_hidden2, nb_hidden1).normal_()
-        # self.bias: torch.Tensor = torch.empty(nb_hidden2).normal_()
         self.dweights: torch.Tensor = torch.empty(nb_hidden2, nb_hidden1)
         self.dbias: torch.Tensor = torch.empty(nb_hidden2)
         self.input: torch.Tensor = torch.empty(nb_hidden1)
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         """
-        :param inputs:
-        :return:
+        :param inputs: (torch.Tensor) input data batch
+        :return: (torch.Tensor) output data batch
+
+        Applies weights and biases to input data and returns result.
         """
         self.input = inputs
 
@@ -53,9 +68,13 @@ class Linear(Module):
         return torch.addmm(self.bias, self.input, self.weights.t())
 
     def backward(self, gradwrtoutput: torch.Tensor) -> torch.Tensor:
+        '''
+        :param gradwrtoutput: (torch.Tensor) batch of gradients wrt output
+        :return: (torch.Tensor)
+        '''
         dx = gradwrtoutput @ self.weights
-        self.dbias.add_(gradwrtoutput.sum(0)).div(self.input.shape[0]) #TODO: SHOULD WE KEEP IT?
-        self.dweights.add_(gradwrtoutput.t().mm(self.input)).div(self.input.shape[0])
+        self.dbias.add_(gradwrtoutput.sum(0))
+        self.dweights.add_(gradwrtoutput.t().mm(self.input))
         return dx
 
     def param(self) -> list:
