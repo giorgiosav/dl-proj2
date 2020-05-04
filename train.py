@@ -28,6 +28,7 @@ def train_myNN(
     eta: float,
     momentum: float,
     plots: bool = False,
+    activation: str = "",
     verbose: bool = False,
 ) -> tuple:
     """
@@ -42,6 +43,7 @@ def train_myNN(
     :param eta: SGD learning rate
     :param momentum: SGD momentum factor
     :param plots: produce intermediate plots or not
+    :param activation: activation function (just to record it in the plot name)
     :param verbose: print logging info
     :return: (losses, errors): dictionaries with loss and number of errors at each step, for train and test
     """
@@ -97,7 +99,7 @@ def train_myNN(
                 print("Saving xy-plot for epoch {}".format(e))
             classes = _prepare_plot_data(model, test_data, batch_size)
             visualize_predictions(
-                test_data, classes, e, "test", "test_classes" + str(e)
+                test_data, classes, e, "test", "test_classes_" + activation + str(e)
             )
 
     return losses, errors

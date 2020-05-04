@@ -24,7 +24,7 @@ def test_selected_model(
     """
 
     # Selecting a random model to plot the xy-axis
-    plot_model = random.randint(0, n_runs)
+    plot_model = random.randint(0, n_runs-1)
 
     tot_loss = []
     tot_err = []
@@ -79,6 +79,7 @@ def test_selected_model(
                 eta,
                 momentum,
                 plots,
+                activation
             )
         else:
             losses, errors = train_myNN(
@@ -299,8 +300,8 @@ def main(activation: str, validation: bool, pytorch: bool, plots: bool, n_runs: 
     print("-------------------------------------------------------")
 
     # Load best params, by computing them or already defined
-    best_etas = {"relu": 0.1, "tanh": 0.1}
-    best_momentum = {"relu": 0.6, "tanh": 0.8}
+    best_etas = {"relu": 0.2, "tanh": 0.1}
+    best_momentum = {"relu": 0.1, "tanh": 0.9}
     if validation:
         print(
             "Starting validation algorithm on eta parameter for the chosen model. "

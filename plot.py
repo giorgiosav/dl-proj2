@@ -69,39 +69,15 @@ def plot_over_epochs(values_list: list, epochs: int, label: str, savename: str):
     """
 
     # Compute the average of the value to plot,
-    mean_train = torch.mean(torch.Tensor([val["train"] for val in values_list]), 0)
-    mean_test = torch.mean(torch.Tensor([val["test"] for val in values_list]), 0)
-    # err_up_train = (
-    #     torch.max(torch.Tensor([val["train"] for val in values_list]), 0)[0]
-    #     - mean_train
-    # )
-    # err_down_train = (
-    #     mean_train
-    #     - torch.min(torch.Tensor([val["train"] for val in values_list]), 0)[0]
-    # )
-    # err_up_test = (
-    #     torch.max(torch.Tensor([val["test"] for val in values_list]), 0)[0] - mean_test
-    # )
-    # err_down_test = (
-    #     mean_test - torch.min(torch.Tensor([val["test"] for val in values_list]), 0)[0]
-    # )
+    mean_train = torch.mean(torch.Tensor([val["train"] for val in values_list]), 0).tolist()
+    mean_test = torch.mean(torch.Tensor([val["test"] for val in values_list]), 0).tolist()
     epochs_range = range(0, epochs)
 
     plt.figure()
 
     # Plot data and save figure
-    # err_train = [err_down_train, err_up_train]
-    # err_test = [err_down_test, err_up_test]
     plt.plot(epochs_range, mean_train, label="Train " + label, color="blue")
-    # markers, caps, bars = plt.errorbar(
-    #     epochs_range, mean_train, yerr=err_train, label="Train " + label, color="blue"
-    # )
-    # [bar.set_alpha(0.5) for bar in bars]
     plt.plot(epochs_range, mean_test, label="Test " + label, color="orange")
-    # markers, caps, bars = plt.errorbar(
-    #     epochs_range, mean_test, yerr=err_test, label="Test " + label, color="orange"
-    # )
-    # [bar.set_alpha(0.5) for bar in bars]
     plt.xticks(range(0, epochs, 10))
 
     # set labels (LaTeX can be used) -> Note: with the setting deactivated, this will print \textbf{...}
