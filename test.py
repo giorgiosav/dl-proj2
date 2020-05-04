@@ -49,7 +49,7 @@ def test_selected_model(activation: str, eta: float, momentum: float, plots: boo
                 myNN.Linear(25, 2),
             )
 
-        if i == plot_model:
+        if plots and i == plot_model:
             print("You chose to produce prediction visualization on a xy grid every 50 epochs.\n"
                   "Model {} was randomly chosen for such plots. This train will require more time...".format(i))
             losses, errors = train_myNN(model, train_data, train_targets, test_data, test_targets,
