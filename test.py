@@ -34,15 +34,11 @@ def test_selected_model(
                 myNN.ReLU(),
                 myNN.Linear(25, 25),
                 myNN.ReLU(),
-                myNN.Linear(25, 25),
-                myNN.ReLU(),
                 myNN.Linear(25, 2),
             )
         else:
             model = myNN.Sequential(
                 myNN.Linear(2, 25),
-                myNN.Tanh(),
-                myNN.Linear(25, 25),
                 myNN.Tanh(),
                 myNN.Linear(25, 25),
                 myNN.Tanh(),
@@ -163,15 +159,11 @@ def test_pytorch_model(
                 nn.ReLU(),
                 nn.Linear(25, 25),
                 nn.ReLU(),
-                nn.Linear(25, 25),
-                nn.ReLU(),
                 nn.Linear(25, 2),
             )
         else:
             model = nn.Sequential(
                 nn.Linear(2, 25),
-                nn.Tanh(),
-                nn.Linear(25, 25),
                 nn.Tanh(),
                 nn.Linear(25, 25),
                 nn.Tanh(),
