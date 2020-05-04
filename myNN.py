@@ -69,15 +69,22 @@ class Linear(Module):
 
     def backward(self, gradwrtoutput: torch.Tensor) -> torch.Tensor:
         '''
-        :param gradwrtoutput: (torch.Tensor) batch of gradients wrt output
-        :return: (torch.Tensor)
+        :param gradwrtoutput: (torch.Tensor) batch of loss gradients wrt output
+        :return: (torch.Tensor) loss gradients wrt input 
+
+        Calculates gradients of loss wrt weights and biases and accumulates them. 
         '''
         dx = gradwrtoutput @ self.weights
-        self.dbias.add_(gradwrtoutput.sum(0))
-        self.dweights.add_(gradwrtoutput.t().mm(self.input))
+        self.dbias.add_(gradwrtoutput.sum(0)) # explicit sum over batches
+        self.dweights.add_(gradwrtoutput.t().mm(self.input)) # implicit sum over batches
         return dx
 
     def param(self) -> list:
+        '''
+        :return: (list) a list of 2 tuples. The first tuple contains weights and 
+            the gradients of the loss wrt to the weights. The second tuple contains
+            the same but for biases.
+        '''
         return [(self.weights, self.dweights), (self.bias, self.dbias)]
 
     def zero_grad(self):
@@ -92,21 +99,33 @@ class Linear(Module):
 
 
 class ReLU(Module):
-
+    '''
+    Implements ReLU layer
+    '''
     def __init__(self):
         self.input: torch.Tensor = torch.empty(0)
         self.drelu: torch.Tensor = torch.empty(0)
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+        '''
+        :param inputs: (torch.Tensor) input data batch
+        :return: (torch.Tensor) output data batch (with ReLU applied)
+        
+        Saves input and calculates derivative
+        '''
         self.input = inputs
 
         relu = torch.relu(self.input)
         self.drelu = relu.clone()
-        self.drelu[self.drelu != 0] = 1
+        self.drelu[self.drelu != 0] = 1 # derivative
 
         return relu
 
     def backward(self, gradwrtoutput: torch.Tensor) -> torch.Tensor:
+        '''
+        :param gradwrtoutput: (torch.Tensor) batch of loss gradients wrt output
+        :return: (torch.Tensor) loss gradients wrt input 
+        '''
         return self.drelu * gradwrtoutput
 
     def param(self):
@@ -114,15 +133,25 @@ class ReLU(Module):
 
 
 class Tanh(Module):
-
+    '''
+    Implements Tanh layer
+    '''
     def __init__(self):
         self.input: torch.Tensor = torch.empty(0)
 
     def forward(self, inputs):
+        '''
+        :param inputs: (torch.Tensor) input data batch
+        :return: (torch.Tensor) output data batch (with Tanh applied)
+        '''
         self.input = inputs
         return torch.tanh(inputs)
 
     def backward(self, gradwrtoutput):
+        '''
+        :param gradwrtoutput: (torch.Tensor) batch of loss gradients wrt output
+        :return: (torch.Tensor) loss gradients wrt input 
+        '''
         dtanh = 1 - torch.pow(torch.tanh(self.input), 2)
         return dtanh * gradwrtoutput
 
@@ -131,19 +160,34 @@ class Tanh(Module):
 
 
 class Sequential(Module):
-
+    '''
+    Implements sequential module with multiple layers
+    '''
     def __init__(self, *layers):
+        '''
+        :param layers: layers in the module
+        '''
         self.layers: list[Module] = list(layers)
         self.backlayers: list[Module] = list(layers)
         self.backlayers.reverse()
 
     def forward(self, inputs):
+        '''
+        :param inputs: (torch.Tensor) input data batch
+        :return: (torch.Tensor) output data batch (with all layers applied)
+        '''
         x = inputs
         for l in self.layers:
             x = l.forward(x)
         return x
 
     def backward(self, gradwrtoutput):
+        '''
+        :param gradwrtoutput: (torch.Tensor) batch of loss gradients wrt output
+        :return: (torch.Tensor) loss gradients wrt module input 
+
+        Calls backward() for every layer in the module
+        '''
         x = gradwrtoutput
         for l in self.backlayers:
             x = l.backward(x)
@@ -151,21 +195,38 @@ class Sequential(Module):
         return x
 
     def zero_grad(self):
+        '''
+        Sets all gradients in the module to zero, by calling zero_grad on
+        every layer.
+        '''
         for l in self.layers:
             l.zero_grad()
 
     def param(self):
+        '''
+        :return: (list) list of params for every layer
+        '''
         return [l.param() for l in self.layers]
 
 
 class LossMSE(Module):
-
+    '''
+    Implements MSE loss module
+    '''
     def __init__(self):
         self.prediction: torch.Tensor = torch.empty(0)
         self.target: torch.Tensor = torch.empty(0)
         self.n_elements = 0
 
     def forward(self, prediction, target):
+        '''
+        :param prediction: (torch.Tensor) input tensor to compare
+        :param target: (torch.Tensor) input target tensor
+        :return: (float) MSE loss between prediction and target
+
+        MSE loss is averaged across all batches, as is the default behavior
+        in Pytorch.
+        '''
         self.prediction = prediction
         self.target = target
 
@@ -181,6 +242,12 @@ class LossMSE(Module):
         return torch.mean((self.prediction - self.target)**2)
 
     def backward(self):
+        '''
+        :return: gradient of the MSE loss wrt the input prediction.
+
+        The gradient is divided by the number of elements (across all batches),
+        as is the default in Pytorch.
+        '''
         dloss = 2 * (self.prediction - self.target) / self.n_elements
         return dloss
 
