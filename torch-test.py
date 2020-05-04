@@ -6,7 +6,7 @@ from torch.nn.parameter import Parameter
 
 def assert_tensors_equal(t1, t2):
     s = torch.sum(t1 - t2)
-    assert math.isclose(s, 0, abs_tol = 1e-07)
+    assert math.isclose(s, 0, abs_tol=1e-07)
 
 
 def test_linear(nb_hidden1, nb_hidden2, batch_size):
@@ -71,10 +71,10 @@ def main():
 
     test_mse(100)
     test_mse((10, 100))
-    #test_mse((10, 100, 23, 42, 61))
+    # test_mse((10, 100, 23, 42, 61))
 
     print("all tests passed!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
