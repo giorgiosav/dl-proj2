@@ -300,8 +300,8 @@ def main(activation: str, validation: bool, pytorch: bool, plots: bool, n_runs: 
     print("-------------------------------------------------------")
 
     # Load best params, by computing them or already defined
-    best_etas = {"relu": 0.2, "tanh": 0.1}
-    best_momentum = {"relu": 0.1, "tanh": 0.9}
+    best_etas = {"relu": 0.1, "tanh": 0.1}
+    best_momentum = {"relu": 0.6, "tanh": 0.9}
     if validation:
         print(
             "Starting validation algorithm on eta parameter for the chosen model. "
