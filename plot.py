@@ -81,6 +81,7 @@ def plot_over_epochs(values_list: list, epochs: int, label: str, savename: str):
     xticks = list(range(0, epochs, 25))
     xticks.append(epochs-1)
     plt.xticks(xticks)
+    plt.grid(linestyle='dotted')
 
     # set labels (LaTeX can be used) -> Note: with the setting deactivated, this will print \textbf{...}
     plt.xlabel(r"\textbf{Epochs}", fontsize=11)

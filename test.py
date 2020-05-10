@@ -35,7 +35,7 @@ def test_selected_model(
     tot_err = []
     tot_err_train = []
     tot_err_test = []
-    epochs = 250
+    epochs = 75
     batch_size = 100
 
     # Do the training
@@ -177,7 +177,7 @@ def test_pytorch_model(
     tot_err = []
     tot_err_train = []
     tot_err_test = []
-    epochs = 250
+    epochs = 75
     batch_size = 100
 
     # Test pytorch over n_runs

@@ -12,7 +12,7 @@ def select_best_hyper(
         etas: list,
         momentums: list,
         n_runs: int = 10,
-        epochs: int = 100,
+        epochs: int = 75,
         batch_size: int = 100,
         verbose: bool = True,
 ) -> dict:
