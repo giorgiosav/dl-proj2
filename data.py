@@ -41,11 +41,13 @@ def get_train_test_data(n_points: int = 1000, random: bool = False, n_runs: int 
     """
 
     if random:
+        # Create random dataset
         torch.manual_seed(current_milli_time())
         train_data, train_targets = _generate_set(n_points)
         torch.manual_seed(current_milli_time())
         test_data, test_targets = _generate_set(n_points)
     else:
+        # Create list of n_runs dataset with fixed seeds
         train_data, train_targets, test_data, test_targets = [], [], [], []
         for i in range(0, n_runs*2, 2):
             torch.manual_seed(i)
