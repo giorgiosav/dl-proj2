@@ -78,7 +78,9 @@ def plot_over_epochs(values_list: list, epochs: int, label: str, savename: str):
     # Plot data and save figure
     plt.plot(epochs_range, mean_train, label="Train " + label, color="blue")
     plt.plot(epochs_range, mean_test, label="Test " + label, color="orange")
-    plt.xticks(range(0, epochs, 10))
+    xticks = list(range(0, epochs, 25))
+    xticks.append(epochs-1)
+    plt.xticks(xticks)
 
     # set labels (LaTeX can be used) -> Note: with the setting deactivated, this will print \textbf{...}
     plt.xlabel(r"\textbf{Epochs}", fontsize=11)

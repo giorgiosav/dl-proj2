@@ -62,7 +62,7 @@ def select_best_hyper(
                     train_targets,
                     test_data,
                     test_targets,
-                ) = get_train_test_data(1000)
+                ) = get_train_test_data(1000, True)
                 train_myNN(
                     model,
                     train_data,

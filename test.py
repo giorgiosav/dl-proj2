@@ -2,12 +2,15 @@
 """Script to test the implementation"""
 
 from train import *
-from data import get_train_test_data
+from data import get_train_test_data, current_milli_time
 from plot import *
 from validation import select_best_hyper
 import argparse
 import sys
 import random
+import torch
+
+torch.manual_seed(42)
 
 
 def test_selected_model(
@@ -23,8 +26,10 @@ def test_selected_model(
     :param n_runs: number of runs for performance estimation
     """
 
-    # Selecting a random model to plot the xy-axis
+    # Selecting a random model to plot the xy-axis, use random seed to select a different dataset at each run
+    torch.manual_seed(current_milli_time())
     plot_model = random.randint(0, n_runs-1)
+    torch.manual_seed(42)
 
     tot_loss = []
     tot_err = []
@@ -35,9 +40,11 @@ def test_selected_model(
 
     # Do the training
     print("Starting training on our implementation over {} runs".format(n_runs))
+    train_data_full, train_targets_full, test_data_full, test_targets_full = get_train_test_data(1000, False, n_runs)
     for i in range(n_runs):
-        # Get random data and create selected network
-        train_data, train_targets, test_data, test_targets = get_train_test_data(1000)
+        # Get data and create selected network
+        train_data, train_targets, test_data, test_targets = train_data_full[i], train_targets_full[i], \
+                                                             test_data_full[i], test_targets_full[i]
         print("Building model {}...".format(i))
         if activation == "relu":
             model = myNN.Sequential(
@@ -175,8 +182,10 @@ def test_pytorch_model(
 
     # Test pytorch over n_runs
     print("Starting training on pytorch implementation over {} runs".format(n_runs))
+    train_data_full, train_targets_full, test_data_full, test_targets_full = get_train_test_data(1000, False, n_runs)
     for i in range(n_runs):
-        train_data, train_targets, test_data, test_targets = get_train_test_data(1000)
+        train_data, train_targets, test_data, test_targets = train_data_full[i], train_targets_full[i], \
+                                                             test_data_full[i], test_targets_full[i]
         print("Building model {}...".format(i))
         if activation == "relu":
             model = nn.Sequential(
@@ -343,18 +352,18 @@ if __name__ == "__main__":
     )
     group_models = title_activations.add_mutually_exclusive_group()
     group_models.add_argument(
-        "-relu",
-        action="store_const",
-        help="Use ReLU as activation function (default)",
-        dest="activation",
-        const="relu",
-    )
-    group_models.add_argument(
         "-tanh",
         action="store_const",
-        help="Use Tanh as activation function",
+        help="Use Tanh as activation function (default)",
         dest="activation",
         const="tanh",
+    )
+    group_models.add_argument(
+        "-relu",
+        action="store_const",
+        help="Use ReLU as activation function",
+        dest="activation",
+        const="relu",
     )
 
     parser.add_argument(
@@ -385,7 +394,7 @@ if __name__ == "__main__":
         default=10,
     )
 
-    parser.set_defaults(activation="relu")
+    parser.set_defaults(activation="tanh")
     args = parser.parse_args()
 
     main(args.activation, args.validation, args.pytorch, args.plots, args.n_runs)
