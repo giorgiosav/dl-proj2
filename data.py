@@ -8,6 +8,7 @@ import time
 # Used to set new seed at each data generation, while seed is fixed for model generation
 current_milli_time = lambda: int(round(time.time() * 1000))
 
+
 def _generate_set(n_points: int) -> tuple:
     """
     Generates 2D points randomly in [0,1]^2 and labels them with 1 if they are within
@@ -25,9 +26,7 @@ def _generate_set(n_points: int) -> tuple:
     sums = points.sub(center).pow(2).sum(1)  # (x-0.5)^2 + (y-0.5)^2
 
     # Compute points labels
-    labels = torch.where(
-        sums <= radius2, torch.ones(n_points), torch.zeros(n_points)
-    ).long()
+    labels = torch.where(sums <= radius2, torch.ones(n_points), torch.zeros(n_points)).long()
 
     return points, labels
 
@@ -49,10 +48,10 @@ def get_train_test_data(n_points: int = 1000, random: bool = False, n_runs: int 
     else:
         # Create list of n_runs dataset with fixed seeds
         train_data, train_targets, test_data, test_targets = [], [], [], []
-        for i in range(0, n_runs*2, 2):
+        for i in range(0, n_runs * 2, 2):
             torch.manual_seed(i)
             train_data_i, train_targets_i = _generate_set(n_points)
-            torch.manual_seed(i+1)
+            torch.manual_seed(i + 1)
             test_data_i, test_targets_i = _generate_set(n_points)
             train_data.append(train_data_i)
             train_targets.append(train_targets_i)

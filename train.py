@@ -63,9 +63,7 @@ def train_myNN(
     for e in range(epochs):
         loss_acc = 0
 
-        for data, target in zip(
-            train_data.split(batch_size), train_targets_onehot.split(batch_size)
-        ):
+        for data, target in zip(train_data.split(batch_size), train_targets_onehot.split(batch_size)):
             # Compute prediction, loss and go in backward pass
             prediction = model(data)
             loss = criterion(prediction, target)
@@ -73,34 +71,24 @@ def train_myNN(
 
             # Zero gradient and do a step
             model.zero_grad()
-            model.backward(
-                criterion.backward()
-            )
+            model.backward(criterion.backward())
             optimizer.step()
 
         # Record loss/errors for train and test at a given epoch
         if verbose:
             print("Epoch: {}, avg loss per batch: {}".format(e, loss_acc / batch_size))
         losses["train"].append(loss_acc / batch_size)
-        loss_test = _compute_loss_test(
-            model, test_data, test_targets_onehot, batch_size, criterion, verbose
-        )
+        loss_test = _compute_loss_test(model, test_data, test_targets_onehot, batch_size, criterion, verbose)
         losses["test"].append(loss_test)
-        errors["train"].append(
-            compute_errors(model, train_data, train_targets, batch_size)
-        )
-        errors["test"].append(
-            compute_errors(model, test_data, test_targets, batch_size)
-        )
+        errors["train"].append(compute_errors(model, train_data, train_targets, batch_size))
+        errors["test"].append(compute_errors(model, test_data, test_targets, batch_size))
 
         # If required, save intermediate xy plot
         if plots and (e % 50 == 0 or e == epochs - 1):
             if verbose:
                 print("Saving xy-plot for epoch {}".format(e))
             classes = _prepare_plot_data(model, test_data, batch_size)
-            visualize_predictions(
-                test_data, classes, e, "test", "test_classes_" + activation + str(e)
-            )
+            visualize_predictions(test_data, classes, e, "test", "test_classes_" + activation + str(e))
 
     return losses, errors
 
@@ -147,9 +135,7 @@ def train_pytorch(
         loss_acc = 0
 
         # Train over a batch
-        for data, target in zip(
-            train_data.split(batch_size), train_targets_onehot.split(batch_size)
-        ):
+        for data, target in zip(train_data.split(batch_size), train_targets_onehot.split(batch_size)):
             prediction = model(data)
             loss = criterion(prediction, target)
             loss_acc += loss
@@ -164,26 +150,15 @@ def train_pytorch(
         # Record the loss and errors
         with torch.no_grad():
             losses["train"].append(loss_acc / batch_size)
-            loss_test = _compute_loss_test(
-                model, test_data, test_targets_onehot, batch_size, criterion, verbose
-            )
+            loss_test = _compute_loss_test(model, test_data, test_targets_onehot, batch_size, criterion, verbose)
             losses["test"].append(loss_test)
-            errors["train"].append(
-                compute_errors(model, train_data, train_targets, batch_size)
-            )
-            errors["test"].append(
-                compute_errors(model, test_data, test_targets, batch_size)
-            )
+            errors["train"].append(compute_errors(model, train_data, train_targets, batch_size))
+            errors["test"].append(compute_errors(model, test_data, test_targets, batch_size))
 
     return losses, errors
 
 
-def compute_errors(
-    model: Union[myNN.Sequential, nn.Sequential],
-    data: torch.Tensor,
-    targets: torch.Tensor,
-    batch_size: int,
-) -> int:
+def compute_errors(model: Union[myNN.Sequential, nn.Sequential], data: torch.Tensor, targets: torch.Tensor, batch_size: int,) -> int:
     """
     Compute number of errors for the given model, and datapoints
     :param model: DL model implemented with pytorch or myNN
@@ -203,9 +178,7 @@ def compute_errors(
     return tot_err
 
 
-def _compute_classes(
-    model: Union[myNN.Sequential, nn.Sequential], inp: torch.Tensor
-) -> torch.Tensor:
+def _compute_classes(model: Union[myNN.Sequential, nn.Sequential], inp: torch.Tensor) -> torch.Tensor:
     """
     Compute the classes from the network output (the index of the max in each tensor is the predicted class)
     :param model: DL model implemented with pytorch or myNN
@@ -219,9 +192,7 @@ def _compute_classes(
     return classes
 
 
-def _prepare_plot_data(
-    model: Union[myNN.Sequential, nn.Sequential], data: torch.Tensor, batch_size: int
-) -> torch.Tensor:
+def _prepare_plot_data(model: Union[myNN.Sequential, nn.Sequential], data: torch.Tensor, batch_size: int) -> torch.Tensor:
     """
     Utility to produce classes for the whole dataset, ready to be plot
     :param model: DL model implemented with pytorch or myNN
@@ -261,9 +232,7 @@ def _compute_loss_test(
     with torch.no_grad():
         # Compute loss over the batch
         loss_acc = 0
-        for data, target in zip(
-            test_data.split(batch_size), test_targets.split(batch_size)
-        ):
+        for data, target in zip(test_data.split(batch_size), test_targets.split(batch_size)):
             prediction = model(data)
             loss = criterion(prediction, target)
             loss_acc += loss

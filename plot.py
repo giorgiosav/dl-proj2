@@ -33,28 +33,23 @@ def visualize_predictions(data: torch.Tensor, target: torch.Tensor, epoch: int, 
     # plot a circle defining the area in which the points are labeled as "1"
     colors = ["orangered", "blue"]
     fig = plt.figure(figsize=(10, 10))
-    circle = plt.Circle(
-        (0.5, 0.5), 1 / math.sqrt(2 * math.pi), color="black", alpha=0.075
-    )
+    circle = plt.Circle((0.5, 0.5), 1 / math.sqrt(2 * math.pi), color="black", alpha=0.075)
     ax = fig.gca()
     ax.add_artist(circle)
 
     # Plot points
     ax.scatter(
-        data[:, 0],
-        data[:, 1],
-        c=target,
-        cmap=matplotlib.colors.ListedColormap(colors),
+        data[:, 0], 
+        data[:, 1], 
+        c=target, 
+        cmap=matplotlib.colors.ListedColormap(colors), 
         s=20,
     )
 
     # Set axis and label
     plt.xlabel(r"\textbf{x}", fontsize=11)
     plt.ylabel(r"\textbf{y}", fontsize=11)
-    plt.title(
-        r"\textbf{Data classes " + test_label + " - Epoch " + str(epoch) + "}",
-        fontsize=15,
-    )
+    plt.title(r"\textbf{Data classes " + test_label + " - Epoch " + str(epoch) + "}", fontsize=15)
     plt.savefig("plot/circles/" + savename + ".pdf")
     plt.close()
 
@@ -79,9 +74,9 @@ def plot_over_epochs(values_list: list, epochs: int, label: str, savename: str):
     plt.plot(epochs_range, mean_train, label="Train " + label, color="blue")
     plt.plot(epochs_range, mean_test, label="Test " + label, color="orange")
     xticks = list(range(0, epochs, 25))
-    xticks.append(epochs-1)
+    xticks.append(epochs - 1)
     plt.xticks(xticks)
-    plt.grid(linestyle='dotted')
+    plt.grid(linestyle="dotted")
 
     # set labels (LaTeX can be used) -> Note: with the setting deactivated, this will print \textbf{...}
     plt.xlabel(r"\textbf{Epochs}", fontsize=11)

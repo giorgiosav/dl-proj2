@@ -54,9 +54,7 @@ class Linear(Module):
         """
         # Init 1: Pytorch Init
         std = 1.0 / math.sqrt(nb_hidden1)
-        self.weights: torch.Tensor = torch.empty(nb_hidden2, nb_hidden1).uniform_(
-            -std, std
-        )
+        self.weights: torch.Tensor = torch.empty(nb_hidden2, nb_hidden1).uniform_(-std, std)
         self.bias: torch.Tensor = torch.empty(nb_hidden2).uniform_(-std, std)
         self.dweights: torch.Tensor = torch.empty(nb_hidden2, nb_hidden1)
         self.dbias: torch.Tensor = torch.empty(nb_hidden2)
@@ -81,9 +79,7 @@ class Linear(Module):
         """
         dx = gradwrtoutput @ self.weights
         self.dbias.add_(gradwrtoutput.sum(0))  # explicit sum over batches
-        self.dweights.add_(
-            gradwrtoutput.t().mm(self.input)
-        )  # implicit sum over batches
+        self.dweights.add_(gradwrtoutput.t().mm(self.input))  # implicit sum over batches
         return dx
 
     def param(self) -> list:
@@ -251,11 +247,7 @@ class LossMSE(Module):
 
         # Check shapes
         if self.prediction.shape != self.target.shape:
-            raise ValueError(
-                "Shape mismatch, prediction: {}, target: {}".format(
-                    self.prediction.shape, self.target.shape
-                )
-            )
+            raise ValueError("Shape mismatch, prediction: {}, target: {}".format(self.prediction.shape, self.target.shape))
 
         # Save number of elements in the batch for backward
         self.n_elements = reduce(lambda a, b: a * b, self.prediction.shape)
