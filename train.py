@@ -84,7 +84,7 @@ def train_myNN(
         errors["test"].append(compute_errors(model, test_data, test_targets, batch_size))
 
         # If required, save intermediate xy plot
-        if plots and (e % 50 == 0 or e == epochs - 1):
+        if plots and (e % 25 == 0 or e == epochs - 1):
             if verbose:
                 print("Saving xy-plot for epoch {}".format(e))
             classes = _prepare_plot_data(model, test_data, batch_size)
