@@ -8,13 +8,13 @@ from data import get_train_test_data
 
 
 def select_best_hyper(
-        activation: str,
-        etas: list,
-        momentums: list,
-        n_runs: int = 10,
-        epochs: int = 75,
-        batch_size: int = 100,
-        verbose: bool = True,
+    activation: str,
+    etas: list,
+    momentums: list,
+    n_runs: int = 10,
+    epochs: int = 75,
+    batch_size: int = 100,
+    verbose: bool = True,
 ) -> dict:
     """
     Get best hyper parameter for myNN implementation by grid-searching
@@ -57,12 +57,7 @@ def select_best_hyper(
                     )
 
                 # A new train/test set is used at each run to avoid overfitting a dataset
-                (
-                    train_data,
-                    train_targets,
-                    test_data,
-                    test_targets,
-                ) = get_train_test_data(1000)
+                (train_data, train_targets, test_data, test_targets,) = get_train_test_data(1000)
                 train_myNN(
                     model,
                     train_data,
@@ -80,11 +75,7 @@ def select_best_hyper(
             err_run = tot_err / n_runs
             # Save accuracy if better than current best
             if verbose:
-                print(
-                    "Eta = {}, momentum = {}, avg_err = {}".format(
-                        eta, momentum, err_run
-                    )
-                )
+                print("Eta = {}, momentum = {}, avg_err = {}".format(eta, momentum, err_run))
             if err_run < best_err:
                 best_err = err_run
                 best_params["eta"] = eta

@@ -13,9 +13,7 @@ import torch
 torch.manual_seed(42)
 
 
-def test_selected_model(
-    activation: str, eta: float, momentum: float, plots: bool, n_runs: int
-):
+def test_selected_model(activation: str, eta: float, momentum: float, plots: bool, n_runs: int):
     """
     Test our implementation with the selected activation function and learning parameters, eventually plotting
     the learning curves and final result.
@@ -27,7 +25,7 @@ def test_selected_model(
     """
 
     # Selecting a random model to plot the xy-axis
-    plot_model = random.randint(0, n_runs-1)
+    plot_model = random.randint(0, n_runs - 1)
 
     tot_loss = []
     tot_err = []
@@ -67,9 +65,7 @@ def test_selected_model(
         if plots and i == plot_model:
             print(
                 "You chose to produce prediction visualization on a xy grid every 50 epochs.\n"
-                "Model {} was randomly chosen for such plots. This train will require more time...".format(
-                    i
-                )
+                "Model {} was randomly chosen for such plots. This train will require more time...".format(i)
             )
             losses, errors = train_myNN(
                 model,
@@ -82,7 +78,7 @@ def test_selected_model(
                 eta,
                 momentum,
                 plots,
-                activation
+                activation,
             )
         else:
             losses, errors = train_myNN(
@@ -102,11 +98,7 @@ def test_selected_model(
         tot_loss.append(losses)
         tot_err.append(errors)
 
-        print(
-            "Training on model {} finished, computing accuracy on train and test...".format(
-                i
-            )
-        )
+        print("Training on model {} finished, computing accuracy on train and test...".format(i))
 
         # Compute error for train and test
         train_err = compute_errors(model, train_data, train_targets, batch_size)
@@ -130,9 +122,7 @@ def test_selected_model(
     mean_test = torch.mean(torch.Tensor([val["test"] for val in tot_loss]), 0)
     for e in range(epochs):
         print(
-            "Epoch {}, average train loss: {}, average test loss: {}".format(
-                e, mean_train[e], mean_test[e]
-            )
+            "Epoch {}, average train loss: {}, average test loss: {}".format(e, mean_train[e], mean_test[e])
         )
 
     # Computing mean accuracy, std and mean train time over the runs
@@ -142,23 +132,13 @@ def test_selected_model(
     var_err_test = torch.std(torch.Tensor(tot_err_test))
     print("-------------------------------------------------------")
     print("Final error count and standard deviation on train and test:")
-    print(
-        "Train -> Mean Error = {}, Standard deviation = {}".format(
-            mean_err_train, var_err_train
-        )
-    )
-    print(
-        "Test -> Mean Error = {}, Standard deviation = {}".format(
-            mean_err_test, var_err_test
-        )
-    )
+    print("Train -> Mean Error = {}, Standard deviation = {}".format(mean_err_train, var_err_train))
+    print("Test -> Mean Error = {}, Standard deviation = {}".format(mean_err_test, var_err_test))
 
     return
 
 
-def test_pytorch_model(
-    activation: str, eta: float, momentum: float, plots: bool, n_runs: int
-):
+def test_pytorch_model(activation: str, eta: float, momentum: float, plots: bool, n_runs: int):
     """
     Test pytorch implementation with the selected activation function and learning parameters, eventually plotting
     the learning curves.
@@ -204,25 +184,13 @@ def test_pytorch_model(
 
         # Train pytorch and record run losses and errors
         losses, errors = train_pytorch(
-            model,
-            train_data,
-            train_targets,
-            test_data,
-            test_targets,
-            epochs,
-            batch_size,
-            eta,
-            momentum,
+            model, train_data, train_targets, test_data, test_targets, epochs, batch_size, eta, momentum,
         )
 
         tot_loss.append(losses)
         tot_err.append(errors)
 
-        print(
-            "Training on model {} finished, computing accuracy on train and test...".format(
-                i
-            )
-        )
+        print("Training on model {} finished, computing accuracy on train and test...".format(i))
 
         train_err = compute_errors(model, train_data, train_targets, batch_size)
         test_err = compute_errors(model, test_data, test_targets, batch_size)
@@ -245,9 +213,7 @@ def test_pytorch_model(
     mean_test = torch.mean(torch.Tensor([val["test"] for val in tot_loss]), 0)
     for e in range(epochs):
         print(
-            "Epoch {}, average train loss: {}, average test loss: {}".format(
-                e, mean_train[e], mean_test[e]
-            )
+            "Epoch {}, average train loss: {}, average test loss: {}".format(e, mean_train[e], mean_test[e])
         )
 
     # Computing mean accuracy, std and mean train time over the runs
@@ -256,19 +222,9 @@ def test_pytorch_model(
     var_err_train = torch.std(torch.Tensor(tot_err_train))
     var_err_test = torch.std(torch.Tensor(tot_err_test))
     print("-------------------------------------------------------")
-    print(
-        "Final error count and standard deviation on train and test for pytorch implementation:"
-    )
-    print(
-        "Train -> Mean Error = {}, Standard deviation = {}".format(
-            mean_err_train, var_err_train
-        )
-    )
-    print(
-        "Test -> Mean Error = {}, Standard deviation = {}".format(
-            mean_err_test, var_err_test
-        )
-    )
+    print("Final error count and standard deviation on train and test for pytorch implementation:")
+    print("Train -> Mean Error = {}, Standard deviation = {}".format(mean_err_train, var_err_train))
+    print("Test -> Mean Error = {}, Standard deviation = {}".format(mean_err_test, var_err_test))
 
     return
 
@@ -336,9 +292,7 @@ def main(activation: str, validation: bool, pytorch: bool, plots: bool, n_runs: 
         # To get same data as our implementation we reset the seed
         torch.manual_seed(42)
         torch.set_grad_enabled(True)
-        print(
-            "You chose to compare performances with Pytorch. A copy of the model with NN will be created"
-        )
+        print("You chose to compare performances with Pytorch. A copy of the model with NN will be created")
         test_pytorch_model(activation, eta, momentum, plots, n_runs)
 
 
@@ -368,8 +322,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-validation",
         action="store_true",
-        help="Run validation on the model. "
-        "If not set, already selected best eta SGD param will be used.",
+        help="Run validation on the model. " "If not set, already selected best eta SGD param will be used.",
     )
 
     parser.add_argument(
@@ -387,10 +340,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "-n_runs",
-        help="Define number of runs of the train/test process ",
-        type=int,
-        default=10,
+        "-n_runs", help="Define number of runs of the train/test process ", type=int, default=10,
     )
 
     parser.set_defaults(activation="tanh")
