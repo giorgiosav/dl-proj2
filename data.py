@@ -22,9 +22,7 @@ def _generate_set(n_points: int) -> tuple:
     sums = points.sub(center).pow(2).sum(1)  # (x-0.5)^2 + (y-0.5)^2
 
     # Compute points labels
-    labels = torch.where(
-        sums <= radius2, torch.ones(n_points), torch.zeros(n_points)
-    ).long()
+    labels = torch.where(sums <= radius2, torch.ones(n_points), torch.zeros(n_points)).long()
 
     return points, labels
 

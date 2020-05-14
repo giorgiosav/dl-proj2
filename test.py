@@ -40,6 +40,7 @@ def test_selected_model(activation: str, eta: float, momentum: float, plots: boo
         # Get random data and create selected network
         train_data, train_targets, test_data, test_targets = get_train_test_data(1000)
         print("Building model {}...".format(i))
+        # fmt: off
         if activation == "relu":
             model = myNN.Sequential(
                 myNN.Linear(2, 25),
@@ -60,7 +61,7 @@ def test_selected_model(activation: str, eta: float, momentum: float, plots: boo
                 myNN.Tanh(),
                 myNN.Linear(25, 2),
             )
-
+        # fmt: on
         # Train the network, Produce xy plots if required
         if plots and i == plot_model:
             print(
@@ -68,31 +69,10 @@ def test_selected_model(activation: str, eta: float, momentum: float, plots: boo
                 "Model {} was randomly chosen for such plots. This train will require more time...".format(i)
             )
             losses, errors = train_myNN(
-                model,
-                train_data,
-                train_targets,
-                test_data,
-                test_targets,
-                epochs,
-                batch_size,
-                eta,
-                momentum,
-                plots,
-                activation,
+                model, train_data, train_targets, test_data, test_targets, epochs, batch_size, eta, momentum, plots, activation,
             )
         else:
-            losses, errors = train_myNN(
-                model,
-                train_data,
-                train_targets,
-                test_data,
-                test_targets,
-                epochs,
-                batch_size,
-                eta,
-                momentum,
-                False,
-            )
+            losses, errors = train_myNN(model, train_data, train_targets, test_data, test_targets, epochs, batch_size, eta, momentum, False,)
 
         # Add loss to list of loss
         tot_loss.append(losses)
@@ -121,9 +101,7 @@ def test_selected_model(activation: str, eta: float, momentum: float, plots: boo
     mean_train = torch.mean(torch.Tensor([val["train"] for val in tot_loss]), 0)
     mean_test = torch.mean(torch.Tensor([val["test"] for val in tot_loss]), 0)
     for e in range(epochs):
-        print(
-            "Epoch {}, average train loss: {}, average test loss: {}".format(e, mean_train[e], mean_test[e])
-        )
+        print("Epoch {}, average train loss: {}, average test loss: {}".format(e, mean_train[e], mean_test[e]))
 
     # Computing mean accuracy, std and mean train time over the runs
     mean_err_train = torch.mean(torch.Tensor(tot_err_train))
@@ -161,6 +139,7 @@ def test_pytorch_model(activation: str, eta: float, momentum: float, plots: bool
     for i in range(n_runs):
         train_data, train_targets, test_data, test_targets = get_train_test_data(1000)
         print("Building model {}...".format(i))
+        # fmt: off
         if activation == "relu":
             model = nn.Sequential(
                 nn.Linear(2, 25),
@@ -181,11 +160,9 @@ def test_pytorch_model(activation: str, eta: float, momentum: float, plots: bool
                 nn.Tanh(),
                 nn.Linear(25, 2),
             )
-
+        # fmt: on
         # Train pytorch and record run losses and errors
-        losses, errors = train_pytorch(
-            model, train_data, train_targets, test_data, test_targets, epochs, batch_size, eta, momentum,
-        )
+        losses, errors = train_pytorch(model, train_data, train_targets, test_data, test_targets, epochs, batch_size, eta, momentum,)
 
         tot_loss.append(losses)
         tot_err.append(errors)
@@ -212,9 +189,7 @@ def test_pytorch_model(activation: str, eta: float, momentum: float, plots: bool
     mean_train = torch.mean(torch.Tensor([val["train"] for val in tot_loss]), 0)
     mean_test = torch.mean(torch.Tensor([val["test"] for val in tot_loss]), 0)
     for e in range(epochs):
-        print(
-            "Epoch {}, average train loss: {}, average test loss: {}".format(e, mean_train[e], mean_test[e])
-        )
+        print("Epoch {}, average train loss: {}, average test loss: {}".format(e, mean_train[e], mean_test[e]))
 
     # Computing mean accuracy, std and mean train time over the runs
     mean_err_train = torch.mean(torch.Tensor(tot_err_train))
@@ -262,10 +237,7 @@ def main(activation: str, validation: bool, pytorch: bool, plots: bool, n_runs: 
     best_etas = {"relu": 0.1, "tanh": 0.1}
     best_momentum = {"relu": 0.6, "tanh": 0.9}
     if validation:
-        print(
-            "Starting validation algorithm on eta parameter for the chosen model. "
-            "This may require a few hours"
-        )
+        print("Starting validation algorithm on eta parameter for the chosen model. " "This may require a few hours")
         # Fine grained search, coarse grained already done before
         etas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
         momentums = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
@@ -300,29 +272,17 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the DL Project 2 implementation.")
     # Loading model params
 
-    title_activations = parser.add_argument_group(
-        "Possible activations", "Select one of the two possible activations"
-    )
+    title_activations = parser.add_argument_group("Possible activations", "Select one of the two possible activations")
     group_models = title_activations.add_mutually_exclusive_group()
     group_models.add_argument(
-        "-tanh",
-        action="store_const",
-        help="Use Tanh as activation function (default)",
-        dest="activation",
-        const="tanh",
+        "-tanh", action="store_const", help="Use Tanh as activation function (default)", dest="activation", const="tanh",
     )
     group_models.add_argument(
-        "-relu",
-        action="store_const",
-        help="Use ReLU as activation function",
-        dest="activation",
-        const="relu",
+        "-relu", action="store_const", help="Use ReLU as activation function", dest="activation", const="relu",
     )
 
     parser.add_argument(
-        "-validation",
-        action="store_true",
-        help="Run validation on the model. " "If not set, already selected best eta SGD param will be used.",
+        "-validation", action="store_true", help="Run validation on the model. " "If not set, already selected best eta SGD param will be used.",
     )
 
     parser.add_argument(

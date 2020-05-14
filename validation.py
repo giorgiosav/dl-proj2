@@ -8,13 +8,7 @@ from data import get_train_test_data
 
 
 def select_best_hyper(
-    activation: str,
-    etas: list,
-    momentums: list,
-    n_runs: int = 10,
-    epochs: int = 75,
-    batch_size: int = 100,
-    verbose: bool = True,
+    activation: str, etas: list, momentums: list, n_runs: int = 10, epochs: int = 75, batch_size: int = 100, verbose: bool = True,
 ) -> dict:
     """
     Get best hyper parameter for myNN implementation by grid-searching
@@ -35,6 +29,7 @@ def select_best_hyper(
             tot_err = 0
             for i in range(0, n_runs):
                 # Create net, train it and compute accuracy on test data
+                # fmt: off
                 if activation == "relu":
                     model = myNN.Sequential(
                         myNN.Linear(2, 25),
@@ -57,18 +52,10 @@ def select_best_hyper(
                     )
 
                 # A new train/test set is used at each run to avoid overfitting a dataset
-                (train_data, train_targets, test_data, test_targets,) = get_train_test_data(1000)
-                train_myNN(
-                    model,
-                    train_data,
-                    train_targets,
-                    test_data,
-                    test_targets,
-                    epochs,
-                    batch_size,
-                    eta,
-                    momentum,
-                )
+                train_data, train_targets, test_data, test_targets = get_train_test_data(1000)
+                train_myNN(model, train_data, train_targets, test_data, test_targets, epochs, batch_size, eta, momentum)
+                # fmt: on
+                
                 err = compute_errors(model, test_data, test_targets, batch_size)
                 tot_err += err
                 del model
@@ -81,15 +68,7 @@ def select_best_hyper(
                 best_params["eta"] = eta
                 best_params["momentum"] = momentum
                 if verbose:
-                    print(
-                        "New best combination: Eta = {}, momentum = {}, avg_err = {}".format(
-                            eta, momentum, err_run
-                        )
-                    )
+                    print("New best combination: Eta = {}, momentum = {}, avg_err = {}".format(eta, momentum, err_run))
 
-    print(
-        "Best result found! Eta = {}, momentum = {}, avg_err = {}".format(
-            best_params["eta"], best_params["momentum"], best_err
-        )
-    )
+    print("Best result found! Eta = {}, momentum = {}, avg_err = {}".format(best_params["eta"], best_params["momentum"], best_err))
     return best_params
