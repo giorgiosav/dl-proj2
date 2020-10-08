@@ -12,6 +12,7 @@ The minimum requirements for the `test.py` are:
 - `Python` (tested on version **_3.8_**)
 - [pip](https://pip.pypa.io/en/stable/) (tested on version *20.2.3*) (For package installation, if needed)
 - `Pytorch` (tested on version *1.6.0*)
+- `Matplotlib` (tested on version *3.3.2*)
 
 **NOTE**: If you have LaTeX installed on your machine, you can uncomment lines `plot.py:12-20` to produce plots with a "LaTeX style". 
 
